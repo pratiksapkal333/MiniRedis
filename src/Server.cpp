@@ -1,5 +1,8 @@
 #include "../include/Server.hpp"
 #include <iostream>
+#include <thread>
+#include <cstring>
+
 // Linux networking headers
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -9,6 +12,24 @@ Server::Server(int p)
 {
     port = p;
     serverSocket = -1;
+}
+
+void Server::handleCllient(int clientSocket)
+{
+    char buffer[1024];
+    while (true)
+    {
+        memset(buffer, 0, sizeof(buffer)); // Clears buffer before reuse.
+
+        int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0); // Reads bytes from socket.
+        if (bytesReceived <= 0)
+        {
+            std::cout << "Client disconnected" << std::endl;
+            break;
+        }
+        std::cout << "Client says: " << buffer << std::endl;
+    }
+    close(clientSocket);
 }
 
 bool Server::start()
@@ -23,7 +44,7 @@ bool Server::start()
         return false;
     }
 
-    // Prevent bind errors on restart
+    // Prevent bind errors on restart / allow port resuse
     int opt = 1;
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     std::cout << "Socket created successfully" << std::endl;
@@ -50,20 +71,26 @@ bool Server::start()
     }
     std::cout << "Server listening on port" << port << std::endl;
 
-    // Accept one client
-    sockaddr_in clientAddress;
-    socklen_t clientSize = sizeof(clientAddress);
-    int clientSocket = accept(serverSocket, (sockaddr *)&clientAddress, &clientSize);
-
-    if (clientSocket < 0)
+    // Infinite server loop
+    while (true)
     {
-        std::cerr << "Client accept failed" << std::endl;
-        return false; // notify if accept failed
+        sockaddr_in clientAddress;
+        socklen_t clientSize = sizeof(clientAddress);
+        int clientSocket = accept(serverSocket, (sockaddr *)&clientAddress, &clientSize);
+
+        if (clientSocket < 0)
+        {
+            std::cerr << "Client accept failed" << std::endl;
+            continue; // notify if accept failed
+        }
+        std::cout << "Client connected" << std::endl;
+
+        // Create thread for client
+        std::thread clientThread(&Server::handleCllient, this, clientSocket);
+        clientThread.detach(); // Allows thread to run independently Server continues accepting new client
     }
-    std::cout << "Client connected" << std::endl;
 
     // close sockets
-    close(clientSocket);
     close(serverSocket);
     return true;
 }

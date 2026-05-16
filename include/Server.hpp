@@ -7,6 +7,8 @@ private:
     int serverSocket;
     int port;
 
+    void handleCllient(int clientSocket);
+
 public:
     Server(int p);
 
