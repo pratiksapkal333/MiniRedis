@@ -1,0 +1,80 @@
+**Concepts to Understand in Step 1**
+
+## 1. C++ Project Structure
+
+A standard C++ project separates different types of files into dedicated directories to keep the codebase clean, scalable, and manageable.
+
+* **`src/`:** Contains the source files (`.cpp`) that hold the actual executable code.
+* **`include/`:** Contains the header files (`.h` or `.hpp`) that hold declarations.
+* **`build/` or `bin/`:** Where temporary object files and the final compiled executable live.
+
+---
+
+## 2. Header/Source Separation
+
+In C++, code is typically split into two files to allow for **faster compilation** and **cleaner organization**:
+
+* **Header File (`.h` / `.hpp`):** The "blueprint" or interface. It announces *what* exists (class definitions, function prototypes, variables) without writing the actual logic.
+* **Source File (`.cpp`):** The implementation. It defines *how* those functions work.
+
+> **Why do this?** If you change the logic inside a `.cpp` file, only that file needs to be recompiled, saving massive amounts of time in large projects.
+
+---
+
+## 3. Linux Compilation
+
+To turn human-readable C++ code into a machine-readable executable on Linux, you use a compiler like `g++`. The process happens in stages:
+
+1. **Preprocessing:** Handles directives like `#include` (copy-pasting headers into the file).
+2. **Compilation:** Translates C++ code into assembly language.
+3. **Assembly:** Converts assembly into machine code, creating **Object Files** (`.o`).
+4. **Linking:** Combines all `.o` files and libraries into a single executable.
+
+*Example command:*
+
+```bash
+g++ main.cpp math.cpp -o my_program
+
+```
+
+---
+
+## 4. Makefiles
+
+As a project grows, typing out compilation commands for dozens of files becomes impossible. A **Makefile** is a script used by the `make` tool to automate compilation.
+
+* It defines **rules**, **dependencies**, and **commands**.
+* **Smart Building:** It checks the timestamps of your files and *only* recompiles the files you actually changed, drastically speeding up development.
+
+---
+
+## 5. Basic OOP (Object-Oriented Programming)
+
+OOP is a programming paradigm that models real-world entities as **Objects** using **Classes** (which act as blueprints). It relies on four core pillars:
+
+* **Encapsulation:** Hiding the internal data (using `private`) and restricting direct access to shield it from corruption.
+* **Inheritance:** Letting a new class adopt the attributes and methods of an existing class (e.g., a `Car` inherits from `Vehicle`).
+* **Polymorphism:** Allowing different classes to respond to the same function call in their own unique way.
+* **Abstraction:** Hiding complex implementation details and showing only the essential features.
+
+---
+
+## 6. Constructors
+
+A **Constructor** is a special member function of a class that gets **automatically called** whenever you create a new object of that class.
+
+* It has the exact same name as the class and no return type.
+* Its primary job is to initialize the object’s variables and allocate any necessary resources.
+* If you don't write one, C++ provides a default constructor for you.
+
+---
+
+## 7. Modular Architecture
+
+Modular architecture is the design practice of breaking a software system into distinct, independent blocks (modules).
+
+Each module has a **single, well-defined responsibility** (e.g., a database module, a graphics module, a physics engine module) and communicates with other modules through strict interfaces (headers). This makes the code highly reusable, easy to test, and easy for teams to work on simultaneously without stepping on each other's toes.
+
+---
+
+Are you setting up a new C++ project right now, or are you preparing for an exam or interview?

@@ -1,18 +1,13 @@
 #include "../include/Server.hpp"
-
 #include <iostream>
 
 int main()
 {
     Server server(6379);
-
     if (!server.start())
     {
-        std::cerr << "Failed to start server"
-                  << std::endl;
-
+        std::cerr << "Failed to start server" << std::endl;
         return 1;
     }
-
     return 0;
 }
