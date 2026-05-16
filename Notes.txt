@@ -1,80 +1,289 @@
-**Concepts to Understand in Step 1**
+Concepts learnt in step 2
 
-## 1. C++ Project Structure
+1. Client–Server Architecture
 
-A standard C++ project separates different types of files into dedicated directories to keep the codebase clean, scalable, and manageable.
+You learned how backend systems communicate.
 
-* **`src/`:** Contains the source files (`.cpp`) that hold the actual executable code.
-* **`include/`:** Contains the header files (`.h` or `.hpp`) that hold declarations.
-* **`build/` or `bin/`:** Where temporary object files and the final compiled executable live.
+Server
 
----
+Waits for connections.
 
-## 2. Header/Source Separation
+Client
 
-In C++, code is typically split into two files to allow for **faster compilation** and **cleaner organization**:
+Initiates connection.
 
-* **Header File (`.h` / `.hpp`):** The "blueprint" or interface. It announces *what* exists (class definitions, function prototypes, variables) without writing the actual logic.
-* **Source File (`.cpp`):** The implementation. It defines *how* those functions work.
+Your project currently works like:
 
-> **Why do this?** If you change the logic inside a `.cpp` file, only that file needs to be recompiled, saving massive amounts of time in large projects.
+Client (nc)
+    ↓
+TCP Connection
+    ↓
+MiniRedisCPP Server
 
----
+This architecture powers:
 
-## 3. Linux Compilation
+websites
+databases
+chat apps
+game servers
+APIs
+2. TCP Networking Basics
 
-To turn human-readable C++ code into a machine-readable executable on Linux, you use a compiler like `g++`. The process happens in stages:
+You learned:
 
-1. **Preprocessing:** Handles directives like `#include` (copy-pasting headers into the file).
-2. **Compilation:** Translates C++ code into assembly language.
-3. **Assembly:** Converts assembly into machine code, creating **Object Files** (`.o`).
-4. **Linking:** Combines all `.o` files and libraries into a single executable.
+TCP is connection-oriented
+reliable communication
+ordered packet delivery
 
-*Example command:*
+Unlike UDP:
 
-```bash
-g++ main.cpp math.cpp -o my_program
+TCP guarantees delivery
+TCP maintains connection state
 
-```
+Redis also uses TCP.
 
----
+3. POSIX Socket Programming
 
-## 4. Makefiles
+You used Linux system calls:
 
-As a project grows, typing out compilation commands for dozens of files becomes impossible. A **Makefile** is a script used by the `make` tool to automate compilation.
+Function	Purpose
+socket()	Create socket
+bind()	Attach port
+listen()	Start listening
+accept()	Accept client
+close()	Close socket
 
-* It defines **rules**, **dependencies**, and **commands**.
-* **Smart Building:** It checks the timestamps of your files and *only* recompiles the files you actually changed, drastically speeding up development.
+These are kernel-level APIs.
 
----
+4. Socket Lifecycle
 
-## 5. Basic OOP (Object-Oriented Programming)
+You learned the standard TCP server flow:
 
-OOP is a programming paradigm that models real-world entities as **Objects** using **Classes** (which act as blueprints). It relies on four core pillars:
+socket()
+→ bind()
+→ listen()
+→ accept()
 
-* **Encapsulation:** Hiding the internal data (using `private`) and restricting direct access to shield it from corruption.
-* **Inheritance:** Letting a new class adopt the attributes and methods of an existing class (e.g., a `Car` inherits from `Vehicle`).
-* **Polymorphism:** Allowing different classes to respond to the same function call in their own unique way.
-* **Abstraction:** Hiding complex implementation details and showing only the essential features.
+This is foundational systems knowledge.
 
----
+5. AF_INET
+AF_INET
 
-## 6. Constructors
+Means:
 
-A **Constructor** is a special member function of a class that gets **automatically called** whenever you create a new object of that class.
+IPv4 networking
 
-* It has the exact same name as the class and no return type.
-* Its primary job is to initialize the object’s variables and allocate any necessary resources.
-* If you don't write one, C++ provides a default constructor for you.
+Your server currently supports IPv4 addresses.
 
----
+6. SOCK_STREAM
+SOCK_STREAM
 
-## 7. Modular Architecture
+Means:
 
-Modular architecture is the design practice of breaking a software system into distinct, independent blocks (modules).
+TCP protocol
 
-Each module has a **single, well-defined responsibility** (e.g., a database module, a graphics module, a physics engine module) and communicates with other modules through strict interfaces (headers). This makes the code highly reusable, easy to test, and easy for teams to work on simultaneously without stepping on each other's toes.
+Reliable byte-stream communication.
 
----
+7. sockaddr_in Structure
 
-Are you setting up a new C++ project right now, or are you preparing for an exam or interview?
+You learned how Linux stores:
+
+IP address
+port
+protocol family
+
+using:
+
+sockaddr_in
+
+This is essential networking knowledge.
+
+8. Port Binding
+
+You learned:
+
+servers must bind to ports
+port identifies service
+
+Example:
+
+80 → HTTP
+443 → HTTPS
+6379 → Redis
+
+Your server binds to:
+
+6379
+
+like real Redis.
+
+9. Network Byte Order
+
+You learned:
+
+htons()
+
+Networking requires standardized byte ordering.
+
+This is an important low-level systems concept.
+
+10. Blocking Calls
+
+Very important concept.
+
+You learned:
+
+accept()
+
+is BLOCKING.
+
+Meaning:
+
+program pauses
+waits for client
+
+This introduces:
+
+synchronous server architecture
+
+Later we’ll improve it using threads.
+
+11. Linux Process Networking
+
+You observed:
+
+ports exist only while process runs
+server lifecycle matters
+processes own sockets
+
+When process exits:
+
+socket disappears
+
+This is real operating systems behavior.
+
+12. SO_REUSEADDR
+
+You encountered a real networking issue:
+
+bind failure after restart
+
+Then solved it using:
+
+setsockopt()
+
+with:
+
+SO_REUSEADDR
+
+This is production-level networking practice.
+
+13. Multiple Terminal Workflow
+
+You learned professional backend workflow:
+
+Terminal	Purpose
+1	Run server
+2	Connect clients
+3	Debug/monitor
+
+Backend/network engineers commonly work like this.
+
+14. Using netcat (nc)
+
+You used:
+
+nc localhost 6379
+
+This is a lightweight TCP client.
+
+Useful for:
+
+debugging
+testing servers
+protocol inspection
+
+Very common tool.
+
+15. Linux Networking Tools
+
+You learned:
+
+Check Listening Ports
+ss -tulnp
+Kill Processes
+pkill MiniRedisCPP
+
+These are practical Linux development skills.
+
+16. Server State Flow
+
+Your current architecture:
+
+Start server
+→ Wait for client
+→ Accept one client
+→ Exit
+
+This is a single-client sequential server.
+
+Next step will evolve this into:
+
+Infinite server
+→ Multiple clients
+→ Concurrent handling
+17. Difference Between “Program” and “Service”
+
+This is important.
+
+Most beginner C++ programs:
+
+Run
+→ Compute
+→ Exit
+
+Your server:
+
+Run
+→ Wait forever
+→ React to events
+
+That is service/backend architecture.
+
+18. Systems Programming Mindset
+
+You started learning:
+
+resource ownership
+socket cleanup
+kernel interactions
+process lifecycle
+networking state
+
+This is very different from beginner application programming.
+
+19. Error Handling Importance
+
+You checked return values for:
+
+socket creation
+bind
+listen
+accept
+
+Good systems software:
+
+never assumes success
+validates every system call
+20. Backend Engineering Foundations
+
+Step 2 introduced concepts used in:
+
+Redis
+databases
+proxies
+backend servers
+multiplayer game servers
+infrastructure software
+
+This is strong foundational knowledge.
